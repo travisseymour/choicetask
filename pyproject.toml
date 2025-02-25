@@ -16,7 +16,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ChoiceTask"
-version = "2025.2.24.6"
+version = "2025.2.24.7"
 description = "ChoiceTask: Simple 4-Color Choice Task For MHP Class."
 authors = [{ name = "Travis L. Seymour, PhD", email = "nogard@ucsc.edu" }]
 license = { file = "LICENSE" }
@@ -35,7 +35,6 @@ classifiers = [
 dependencies = [
     "pyside6>=6.4.0,<7.0.0",  # Ensures stability across minor versions
     "pygame>=2.1.0,<3.0.0",    # Pygame 2.1+ for better SDL2 support
-    "fastnumbers>=4.0.0,<5.0.0",  # Ensures try_int is available
     "loguru>=0.6.0,<1.0.0",    # Latest stable before major changes
 ]
 

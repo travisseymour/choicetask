@@ -1,15 +1,16 @@
 from typing import Literal
 
-import fastnumbers
 from PySide6.QtGui import QFont
+
+from choicetask import quicknumbers
 
 
 def int_or_zero(value):
-    return fastnumbers.try_int(value, on_fail=0, on_type_error=0)
+    return quicknumbers.try_int(value, default=0)
 
 
 def float_or_zero(value):
-    return fastnumbers.try_float(value, on_fail=0.0, on_type_error=0)
+    return quicknumbers.try_float(value, default=0)
 
 
 def get_default_font(family: Literal["sans-serif", "serif", "monospace"] = "monospace", size: int = 14) -> QFont:
