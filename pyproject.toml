@@ -1,0 +1,75 @@
+# To install deps from toml
+# -------------------------
+# > pip install .[dev] && pip uninstall .
+# OR
+# > make install
+#
+# To push to github
+# -------------------------
+# See Workflow.md
+
+# NOTE: Fix PySide6 xcb plugin error on linux by installing: sudo apt install libxcb-cursor0
+
+[build-system]
+requires = ["setuptools>=46.4.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ChoiceTask"
+version = "2025.2.21.1"
+description = "ChoiceTask: Simple 4-Color Choice Task For MHP Class."
+authors = [{ name = "Travis L. Seymour, PhD", email = "nogard@ucsc.edu" }]
+license = { file = "LICENSE" }
+readme = "README.md"
+requires-python = ">=3.10"
+keywords = ["education", "grading", "writing", "utility"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent"
+]
+dependencies = [
+    "pyside6",
+    "pygame",
+    "fastnumbers",
+    "loguru",
+]
+
+[project.urls]
+"Bug Tracker" = "https://github.com/travisseymour/choicetask/issues"
+"Documentation" = "https://github.com/travisseymour/choicetask#readme"
+
+[project.optional-dependencies]
+dev = [
+    # "pytest",
+    "black",
+    "ruff",
+    "build",
+    "check-manifest",
+    # "qt6-tools",
+
+]
+
+[project.scripts]
+choicetask = "choicetask.main:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["choicetask"]  # Include only the 'autoscore' package
+namespaces = false
+
+# pull in any files defined in MANIFEST.in use with importlib.resources
+[tool.setuptools]
+include-package-data = true
+
+
+[tool.black]
+line-length = 120
+
+[tool.ruff]
+line-length = 120
+lint.ignore = ["F821", "F841", "E722"]  # undefined name, assigned but unused variable, bare except
