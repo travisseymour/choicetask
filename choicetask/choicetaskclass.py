@@ -21,9 +21,9 @@ import random
 
 from PySide6.QtWidgets import QApplication
 
-import exptobj
-from colordict import rgbcolor
-from psychtaskclass import PsychTask
+from choicetask import exptobj
+from choicetask.colordict import rgbcolor
+from choicetask.psychtaskclass import PsychTask
 from version import __version__
 
 

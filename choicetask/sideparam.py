@@ -23,10 +23,11 @@ from typing import Any, Optional, List, Tuple, Dict, Union
 from PySide6 import QtWidgets, QtCore
 from PySide6.QtWidgets import QApplication, QLabel
 
-from app_utils import int_or_zero, float_or_zero
-from mboxes import mbox_warning
+
 
 from choicetask import log
+from choicetask.app_utils import int_or_zero, float_or_zero
+from choicetask.mboxes import mbox_warning
 
 """
 QT based parameter form class.

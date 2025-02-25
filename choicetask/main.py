@@ -26,9 +26,10 @@ from pygame import Surface, SurfaceType
 
 from choicetask import log
 from choicetask.app_utils import get_default_font
+from choicetask.choicetaskclass import ChoiceTask
+from choicetask.mboxes import mbox_critical
 from choicetask.resource import get_resource
-from choicetaskclass import ChoiceTask
-from mboxes import mbox_critical
+
 import pygame
 
 # from pygame.locals import *

@@ -21,8 +21,8 @@ import random
 
 import exptobj
 from choicetask import log
-from colordict import rgbcolor
-from mboxes import mbox_warning
+from choicetask.colordict import rgbcolor
+from choicetask.mboxes import mbox_warning
 
 
 class PsychTask:
