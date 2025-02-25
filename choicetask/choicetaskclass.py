@@ -24,7 +24,7 @@ from PySide6.QtWidgets import QApplication
 from choicetask import exptobj
 from choicetask.colordict import rgbcolor
 from choicetask.psychtaskclass import PsychTask
-from version import __version__
+from choicetask.version import __version__
 
 
 class ChoiceTask(PsychTask):
