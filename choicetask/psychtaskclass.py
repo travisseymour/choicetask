@@ -19,8 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import os
 import random
 
-import exptobj
-from choicetask import log
+from choicetask import log, exptobj
 from choicetask.colordict import rgbcolor
 from choicetask.mboxes import mbox_warning
 
