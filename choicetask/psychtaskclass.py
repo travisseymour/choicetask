@@ -1,6 +1,6 @@
 """
 ChoiceTask
-Copyright (C) 2015-2025 Travis L. Seymour, PhD
+Copyright (C) 2015-2026 Travis L. Seymour, PhD
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import os
 import random
 
-from choicetask import log, exptobj
+from choicetask import exptobj, log
 from choicetask.colordict import rgbcolor
 from choicetask.mboxes import mbox_warning
 
@@ -177,7 +177,7 @@ class PsychTask:
                     a_row_string = ",".join(a_row) + "\n"
                     outfile.write(a_row_string)
             log.info(f"Data successfully saved to {out_filename}")
-        except IOError:
+        except OSError:
             comment = f"Warning: Unable to save data file to [<em>{out_filename}</em>]"
             log.error(f"\n\nDATA LOSS NOTICE:{comment}\n\n")
             mbox_warning(msg=comment, title="Data Loss Notice")

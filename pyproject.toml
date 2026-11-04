@@ -11,31 +11,31 @@
 # NOTE: Fix PySide6 xcb plugin error on linux by installing: sudo apt install libxcb-cursor0
 
 [build-system]
-requires = ["setuptools>=46.4.0", "wheel"]
+requires = ["setuptools>=61.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "ChoiceTask"
-version = "2025.2.24.7"
+version = "2026.11.3.1"
 description = "ChoiceTask: Simple 4-Color Choice Task For MHP Class."
 authors = [{ name = "Travis L. Seymour, PhD", email = "nogard@ucsc.edu" }]
 license = { file = "LICENSE" }
 readme = "README.md"
-requires-python = ">=3.10"
-keywords = ["education", "grading", "writing", "utility"]
+requires-python = ">=3.11,<3.15"
+keywords = ["education", "psychology", "experiment", "cognitive"]
 classifiers = [
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Operating System :: OS Independent"
 ]
 dependencies = [
-    "pyside6>=6.4.0,<7.0.0",  # Ensures stability across minor versions
-    "pygame>=2.1.0,<3.0.0",    # Pygame 2.1+ for better SDL2 support
-    "loguru>=0.6.0,<1.0.0",    # Latest stable before major changes
+    "pyside6-essentials>=6.6.0,<6.9.0",
+    "pygame-ce>=2.4.0,<3.0.0",
+    "loguru>=0.7.0,<1.0.0"
 ]
 
 [project.urls]
@@ -44,12 +44,10 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    # "pytest",
     "black",
     "ruff",
     "build",
     "check-manifest",
-    # "qt6-tools",
 
 ]
 
@@ -58,7 +56,7 @@ choicetask = "choicetask.main:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["choicetask"]  # Include only the 'autoscore' package
+include = ["choicetask"]  # Include only the 'choicetask' package
 namespaces = false
 
 # pull in any files defined in MANIFEST.in use with importlib.resources
@@ -71,4 +69,6 @@ line-length = 120
 
 [tool.ruff]
 line-length = 120
-lint.ignore = ["F821", "F841", "E722"]  # undefined name, assigned but unused variable, bare except
+
+[tool.ruff.lint]
+ignore = ["F821", "F841", "E722"]  # undefined name, assigned but unused variable, bare except

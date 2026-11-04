@@ -1,6 +1,6 @@
 """
 ChoiceTask
-Copyright (C) 2015-2025 Travis L. Seymour, PhD
+Copyright (C) 2015-2026 Travis L. Seymour, PhD
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -16,13 +16,18 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-from pathlib import Path
-from typing import Optional, Union
+# from pygame.locals import *
+import configparser
+import getpass
 import os
+import tempfile
+from pathlib import Path
+
+import pygame
+from pygame import Surface, SurfaceType
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication
-from pygame import Surface, SurfaceType
 
 from choicetask import log
 from choicetask.app_utils import get_default_font
@@ -30,15 +35,8 @@ from choicetask.choicetaskclass import ChoiceTask
 from choicetask.mboxes import mbox_critical
 from choicetask.resource import get_resource
 
-import pygame
-
-# from pygame.locals import *
-import configparser
-import tempfile
-import getpass
-
-app: Optional[QApplication] = None
-main_surface: Optional[Union[Surface, SurfaceType]] = None
+app: QApplication | None = None
+main_surface: Surface | SurfaceType | None = None
 
 
 def user_folder_list(folder_list) -> tuple[str, ...]:
@@ -177,7 +175,7 @@ def main():
     default_font = get_default_font(family="sans-serif", size=14)
     QApplication.instance().setFont(default_font)
 
-    from choicetask.sideparam import NoteItem, StringItem, IntItem, ChoiceItem, BoolItem, ParamForm, run_app
+    from choicetask.sideparam import BoolItem, ChoiceItem, IntItem, NoteItem, ParamForm, StringItem, run_app
 
     # Load application icons
     icon = QIcon()

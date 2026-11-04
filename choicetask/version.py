@@ -1,6 +1,6 @@
 """
 ChoiceTask
-Copyright (C) 2015-2025 Travis L. Seymour, PhD
+Copyright (C) 2015-2026 Travis L. Seymour, PhD
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

@@ -1,6 +1,6 @@
 """
 SideParam
-Copyright (C) 2015-2025 Travis L. Seymour, PhD
+Copyright (C) 2015-2026 Travis L. Seymour, PhD
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -18,15 +18,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import os
 from sys import maxsize
-from typing import Any, Optional, List, Tuple, Dict, Union
+from typing import Any
 
-from PySide6 import QtWidgets, QtCore
+from PySide6 import QtCore, QtWidgets
 from PySide6.QtWidgets import QApplication, QLabel
 
-
-
 from choicetask import log
-from choicetask.app_utils import int_or_zero, float_or_zero
+from choicetask.app_utils import float_or_zero, int_or_zero
 from choicetask.mboxes import mbox_warning
 
 """
@@ -37,11 +35,11 @@ Inspired by QtGuidata.
 
 # ------------------------------------
 class DataType:
-    def __init__(self, label: Optional[str], default: Any, tooltip: Optional[str]) -> None:
-        self.label: Optional[str] = label
+    def __init__(self, label: str | None, default: Any, tooltip: str | None) -> None:
+        self.label: str | None = label
         self.default: Any = default
-        self.tooltip: Optional[str] = tooltip
-        self.widgets: Dict[str, Optional[QtWidgets.QWidget]] = {}
+        self.tooltip: str | None = tooltip
+        self.widgets: dict[str, QtWidgets.QWidget | None] = {}
 
     def _fix_params(self) -> None:
         if not isinstance(self.tooltip, str):
@@ -50,7 +48,7 @@ class DataType:
     def fix_params(self) -> None:
         pass
 
-    def make_widget(self) -> Optional[QtWidgets.QWidget]:
+    def make_widget(self) -> QtWidgets.QWidget | None:
         return None
 
     def value(self) -> Any:
@@ -58,7 +56,7 @@ class DataType:
 
 
 class NoteItem(DataType):
-    def __init__(self, label: Optional[str] = None, note_text: str = "") -> None:
+    def __init__(self, label: str | None = None, note_text: str = "") -> None:
         super().__init__(label, None, None)
         self.note: str = note_text
         self.fix_params()
@@ -71,12 +69,12 @@ class NoteItem(DataType):
             self.note = str(self.note)
 
     def make_widgets(self) -> None:
-        label_widget: Optional[QtWidgets.QLabel] = QtWidgets.QLabel(self.label) if self.label else None
+        label_widget: QtWidgets.QLabel | None = QtWidgets.QLabel(self.label) if self.label else None
         widget: QtWidgets.QLabel = QtWidgets.QLabel(self.note)
         self.widgets["label"] = label_widget
         self.widgets["widget"] = widget
 
-    def value(self) -> Tuple[None, None]:
+    def value(self) -> tuple[None, None]:
         return None, None
 
 
@@ -88,8 +86,8 @@ class StringItem(DataType):
         tooltip: str = "",
         notempty: bool = False,
         maxlength: int = 1000,
-        good_list: Optional[List[Any]] = None,
-        bad_list: Optional[List[Any]] = None,
+        good_list: list[Any] | None = None,
+        bad_list: list[Any] | None = None,
         bad_list_msg: str = "\n(This value is forbidden.)",
         empty_msg: str = "\n(This field cannot be empty.)",
     ) -> None:
@@ -97,8 +95,8 @@ class StringItem(DataType):
         self.not_empty: bool = notempty
         self.max_length: int = maxlength
         self.fix_params()
-        self.good_list: List[str] = list(map(str, good_list)) if good_list else []
-        self.bad_list: List[Any] = list(bad_list) if bad_list else []
+        self.good_list: list[str] = list(map(str, good_list)) if good_list else []
+        self.bad_list: list[Any] = list(bad_list) if bad_list else []
         self.bad_list_msg: str = bad_list_msg
         self.empty_msg: str = empty_msg
         self.make_widgets()
@@ -113,7 +111,7 @@ class StringItem(DataType):
             self.max_length = 1000
 
     def make_widgets(self) -> None:
-        label_widget: Optional[QtWidgets.QLabel] = QtWidgets.QLabel(self.label) if self.label else None
+        label_widget: QtWidgets.QLabel | None = QtWidgets.QLabel(self.label) if self.label else None
         widget: QtWidgets.QLineEdit = QtWidgets.QLineEdit(self.default)
         widget.setMaxLength(self.max_length)
         widget.setToolTip(self.tooltip)
@@ -156,8 +154,8 @@ class StringItem(DataType):
         if label_text != label.text():
             label.setText(label_text)
 
-    def value(self) -> Tuple[str, str]:
-        label_widget: Optional[QtWidgets.QLabel] = self.widgets.get("label")
+    def value(self) -> tuple[str, str]:
+        label_widget: QtWidgets.QLabel | None = self.widgets.get("label")
         label_val: str = label_widget.text() if label_widget else ""
         return label_val, self.widgets["widget"].text()  # type: ignore
 
@@ -176,8 +174,8 @@ class FileItem(DataType):
         self.initial_dir: str = initialdir
         self.filespec: str = filespec
         self.not_empty: bool = notempty
-        self.f_edit: Optional[QtWidgets.QPlainTextEdit] = None
-        self.f_but: Optional[QtWidgets.QToolButton] = None
+        self.f_edit: QtWidgets.QPlainTextEdit | None = None
+        self.f_but: QtWidgets.QToolButton | None = None
         self.fix_default()
         self.fix_params()
         self.make_widgets()
@@ -205,7 +203,7 @@ class FileItem(DataType):
             self.f_edit.setPlainText(f_name)
 
     def make_widgets(self) -> None:
-        label_widget: Optional[QtWidgets.QLabel] = QtWidgets.QLabel(self.label) if self.label else None
+        label_widget: QtWidgets.QLabel | None = QtWidgets.QLabel(self.label) if self.label else None
         widget_set: QtWidgets.QWidget = QtWidgets.QWidget()
         widget_set.setWindowFlags(QtCore.Qt.WindowType.Widget)
         layout: QtWidgets.QHBoxLayout = QtWidgets.QHBoxLayout()
@@ -224,8 +222,8 @@ class FileItem(DataType):
         self.widgets["label"] = label_widget
         self.widgets["widget"] = widget_set
 
-    def value(self) -> Tuple[str, str]:
-        label_widget: Optional[QLabel] = self.widgets.get("label")
+    def value(self) -> tuple[str, str]:
+        label_widget: QLabel | None = self.widgets.get("label")
         label_val: str = label_widget.text() if label_widget else ""
         return label_val, self.f_edit.toPlainText()
 
@@ -249,15 +247,15 @@ class DirectoryItem(FileItem):
 class TextItem(StringItem):
     def make_widgets(self) -> None:
         # self.word_wrap: bool = True
-        label_widget: Optional[QtWidgets.QLabel] = QtWidgets.QLabel(self.label) if self.label else None
+        label_widget: QtWidgets.QLabel | None = QtWidgets.QLabel(self.label) if self.label else None
         widget: QtWidgets.QPlainTextEdit = QtWidgets.QPlainTextEdit(self.default)
         widget.setMinimumHeight(54)
         widget.setToolTip(self.tooltip)
         self.widgets["label"] = label_widget
         self.widgets["widget"] = widget
 
-    def value(self) -> Tuple[str, str]:
-        label_widget: Optional[QtWidgets.QLabel] = self.widgets.get("label")
+    def value(self) -> tuple[str, str]:
+        label_widget: QtWidgets.QLabel | None = self.widgets.get("label")
         label_val: str = label_widget.text() if label_widget else ""
         return label_val, self.widgets["widget"].toPlainText()  # type: ignore
 
@@ -266,12 +264,12 @@ class ChoiceItem(DataType):
     def __init__(
         self,
         label: str = "",
-        default: Union[int, str] = 0,
+        default: int | str = 0,
         tooltip: str = "",
-        choices: Optional[Union[List[Any], Tuple[Any, ...]]] = None,
+        choices: list[Any] | tuple[Any, ...] | None = None,
     ) -> None:
         super().__init__(label, default, tooltip)
-        self.choices: Optional[Union[List[Any], Tuple[Any, ...]]] = choices
+        self.choices: list[Any] | tuple[Any, ...] | None = choices
         if isinstance(self.choices, (list, tuple)):
             self.choices = list(map(str, self.choices))
         self.index: int = 0
@@ -303,8 +301,8 @@ class ChoiceItem(DataType):
             self.widgets["label"] = label_widget
             self.widgets["widget"] = widget
 
-    def value(self) -> Tuple[str, str]:
-        label_widget: Optional[QtWidgets.QLabel] = self.widgets.get("label")
+    def value(self) -> tuple[str, str]:
+        label_widget: QtWidgets.QLabel | None = self.widgets.get("label")
         label_val: str = label_widget.text() if label_widget else ""
         return label_val, self.widgets["widget"].currentText()  # type: ignore
 
@@ -325,7 +323,7 @@ class IntItem(DataType):
         self.max_value = int_or_zero(self.max_value)
 
     def make_widgets(self) -> None:
-        label_widget: Optional[QtWidgets.QLabel] = QtWidgets.QLabel(self.label)
+        label_widget: QtWidgets.QLabel | None = QtWidgets.QLabel(self.label)
         widget: QtWidgets.QSpinBox = QtWidgets.QSpinBox()
         widget.setValue(self.default)
         widget.setRange(self.min_value, self.max_value)
@@ -333,8 +331,8 @@ class IntItem(DataType):
         self.widgets["label"] = label_widget
         self.widgets["widget"] = widget
 
-    def value(self) -> Tuple[str, int]:
-        label_widget: Optional[QtWidgets.QLabel] = self.widgets.get("label")
+    def value(self) -> tuple[str, int]:
+        label_widget: QtWidgets.QLabel | None = self.widgets.get("label")
         label_val: str = label_widget.text() if label_widget else ""
         return label_val, self.widgets["widget"].value()  # type: ignore
 
@@ -346,7 +344,7 @@ class FloatItem(IntItem):
         self.max_value = float_or_zero(self.max_value)
 
     def make_widgets(self) -> None:
-        label_widget: Optional[QtWidgets.QLabel] = QtWidgets.QLabel(self.label)
+        label_widget: QtWidgets.QLabel | None = QtWidgets.QLabel(self.label)
         widget: QtWidgets.QDoubleSpinBox = QtWidgets.QDoubleSpinBox()
         widget.setValue(self.default)
         widget.setRange(self.min_value, self.max_value)
@@ -357,10 +355,10 @@ class FloatItem(IntItem):
 
 class BoolItem(DataType):
     def __init__(
-        self, label: str = "", default: bool = True, tooltip: str = "", tag: Optional[str] = None, enabled: bool = True
+        self, label: str = "", default: bool = True, tooltip: str = "", tag: str | None = None, enabled: bool = True
     ) -> None:
         super().__init__(label, default, tooltip)
-        self.tag: Optional[str] = tag
+        self.tag: str | None = tag
         self.enabled: bool = enabled
         self.fix_params()
         self.make_widgets()
@@ -370,7 +368,7 @@ class BoolItem(DataType):
         self.default = bool(self.default)
 
     def make_widgets(self) -> None:
-        label_widget: Optional[QtWidgets.QLabel] = QtWidgets.QLabel(self.label)
+        label_widget: QtWidgets.QLabel | None = QtWidgets.QLabel(self.label)
         widget: QtWidgets.QCheckBox = QtWidgets.QCheckBox()
         widget.setChecked(self.default)
         if self.tag:
@@ -380,8 +378,8 @@ class BoolItem(DataType):
         self.widgets["label"] = label_widget
         self.widgets["widget"] = widget
 
-    def value(self) -> Tuple[str, bool]:
-        label_widget: Optional[QtWidgets.QLabel] = self.widgets.get("label")
+    def value(self) -> tuple[str, bool]:
+        label_widget: QtWidgets.QLabel | None = self.widgets.get("label")
         label_val: str = label_widget.text() if label_widget else ""
         return label_val, self.widgets["widget"].isChecked()  # type: ignore
 
@@ -399,10 +397,10 @@ def run_app(main_window: QtWidgets.QWidget, title: str, app: QApplication) -> No
 
 
 class ParamForm(QtWidgets.QDialog):
-    def __init__(self, title: str, param_list: List[DataType]) -> None:
+    def __init__(self, title: str, param_list: list[DataType]) -> None:
         super().__init__()
         self.title: str = title
-        self.param_list: List[DataType] = param_list
+        self.param_list: list[DataType] = param_list
         self.row: int = 0
         # Rename "ok" to "accepted" for clarity.
         self.ok: bool = True
@@ -422,8 +420,8 @@ class ParamForm(QtWidgets.QDialog):
             return
         # Add widgets from param_list.
         for param in self.param_list:
-            label: Optional[QtWidgets.QWidget] = param.widgets.get("label")
-            widget: Optional[QtWidgets.QWidget] = param.widgets.get("widget")
+            label: QtWidgets.QWidget | None = param.widgets.get("label")
+            widget: QtWidgets.QWidget | None = param.widgets.get("widget")
             if label is not None and widget is not None:
                 # For compound widgets (e.g., FileItem), span across columns.
                 if isinstance(widget, QtWidgets.QWidget):
@@ -448,8 +446,8 @@ class ParamForm(QtWidgets.QDialog):
         button_layout_widget.setLayout(layout)
         self.layout.addWidget(button_layout_widget, self.row, 1)
 
-    def get_values(self) -> List[Any]:
-        values: List[Any] = []
+    def get_values(self) -> list[Any]:
+        values: list[Any] = []
         for param in self.param_list:
             _, value = param.value()
             values.append(value)
@@ -462,12 +460,10 @@ class ParamForm(QtWidgets.QDialog):
         question: str = f"{msg}<br>----------------<br>"
         for param in self.param_list:
             label, value = param.value()
-            if value is None:
-                continue
-            elif isinstance(param, StringItem):
+            if value is None or isinstance(param, StringItem):
                 continue
             elif isinstance(param, BoolItem):
-                tag: Optional[str] = param.tag
+                tag: str | None = param.tag
                 tag_str: str = f"[{tag}]" if tag else ""
                 question += f'<font color="#0000FF">{label}{tag_str}</font>: {value}<br>'
             else:
@@ -483,7 +479,7 @@ class ParamForm(QtWidgets.QDialog):
         self.close()
 
     def click_ok(self) -> None:
-        problem_fields: List[str] = []
+        problem_fields: list[str] = []
         for param in self.param_list:
             if isinstance(param, (TextItem, StringItem)):
                 label, _ = param.value()

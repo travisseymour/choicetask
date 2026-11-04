@@ -1,6 +1,6 @@
 """
 ChoiceTask
-Copyright (C) 2015-2025 Travis L. Seymour, PhD
+Copyright (C) 2015-2026 Travis L. Seymour, PhD
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-from PySide6 import QtWidgets, QtCore
+from PySide6 import QtCore, QtWidgets
 
 from choicetask import log
 
@@ -59,7 +59,7 @@ def mbox_input(msg, title="Enter Your Response"):
     https://doc.qt.io/qt-5/qinputdialog.html
     """
     input_box = QtWidgets.QInputDialog(flags=QtCore.Qt.WindowType.Dialog)
-    text, ok = QtWidgets.QInputDialog.getText(
+    text, _ok = QtWidgets.QInputDialog.getText(
         input_box, title, msg, QtWidgets.QLineEdit.EchoMode.Normal, "", flags=QtCore.Qt.WindowType.Dialog
     )
     return text

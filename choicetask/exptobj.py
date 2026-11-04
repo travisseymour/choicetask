@@ -1,6 +1,6 @@
 """
 ChoiceTask
-Copyright (C) 2015-2025 Travis L. Seymour, PhD
+Copyright (C) 2015-2026 Travis L. Seymour, PhD
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -16,11 +16,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-from typing import Optional
+import os
+import timeit
 
 import pygame
-import timeit
-import os
 
 from choicetask import log
 
@@ -92,8 +91,8 @@ class TrialEvent:
 
     def run(self):
         """Displays stimulus and waits for stopping condition"""
-        resp: Optional[str] = None
-        rt: Optional[float] = None
+        resp: str | None = None
+        rt: float | None = None
 
         if self.paramsOK:
             self.draw_info = self.setup_visual_objects()
@@ -291,7 +290,6 @@ class CircleTrialEvent(TrialEvent):
         self.surface.fill(self.params["backcolor"])
         # draw a filled circle on the main surface
         pygame.draw.circle(self.surface, self.params["color"], self.draw_info["position"], self.params["radius"])
-        return
 
 
 class PictureTrialEvent(TrialEvent):
@@ -357,7 +355,6 @@ class PictureTrialEvent(TrialEvent):
         self.surface.fill(self.params["backcolor"])
         # BLIT (draw) the picture data on the main window
         self.surface.blit(self.draw_info["image"], self.draw_info["position"])
-        return
 
 
 if __name__ == "__main__":
