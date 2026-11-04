@@ -458,9 +458,9 @@ class ParamForm(QtWidgets.QDialog):
             elif isinstance(param, BoolItem):
                 tag: str | None = param.tag
                 tag_str: str = f"[{tag}]" if tag else ""
-                question += f"<b>{label}{tag_str}</b>: {value}<br>"
+                question += f"<b>{label}{tag_str}</b>: <span style='color:#00AAAA'>{value}</span><br>"
             else:
-                question += f"<b>{label}</b>: {value}<br>"
+                question += f"<b>{label}</b>: <span style='color:#00AAAA'>{value}</span><br>"
         buttons = QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No
         default_button = QtWidgets.QMessageBox.StandardButton.Yes
         msg_box = QtWidgets.QMessageBox()
