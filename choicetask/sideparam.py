@@ -21,6 +21,7 @@ from sys import maxsize
 from typing import Any
 
 from PySide6 import QtCore, QtWidgets
+from PySide6.QtCore import QSettings
 from PySide6.QtWidgets import QApplication, QLabel
 
 from choicetask import log
@@ -408,6 +409,7 @@ class ParamForm(QtWidgets.QDialog):
         self.row: int = 0
         # Rename "ok" to "accepted" for clarity.
         self.ok: bool = True
+        self.settings: QSettings = QSettings("ChoiceTask", "ParamForm")
         self.ok_button: QtWidgets.QPushButton = QtWidgets.QPushButton("OK", self)
         self.cancel_button: QtWidgets.QPushButton = QtWidgets.QPushButton("Cancel", self)
         self.ok_button.clicked.connect(self.click_ok)
@@ -423,6 +425,9 @@ class ParamForm(QtWidgets.QDialog):
         self.add_widgets()
         self.add_buttons()
         self.setLayout(self.layout)
+
+        # Restore saved position
+        self._restore_geometry()
 
     def add_widgets(self) -> None:
         if not self.param_list:
@@ -478,10 +483,25 @@ class ParamForm(QtWidgets.QDialog):
                 question += f"<b>{label}{tag_str}</b>: <span style='color:#00AAAA'>{value}</span><br>"
             else:
                 question += f"<b>{label}</b>: <span style='color:#00AAAA'>{value}</span><br>"
-        buttons = QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No
-        default_button = QtWidgets.QMessageBox.StandardButton.Yes
+
         msg_box = QtWidgets.QMessageBox()
-        response = QtWidgets.QMessageBox.question(msg_box, "Question", question, buttons, default_button)
+        msg_box.setWindowTitle("Question")
+        msg_box.setText(question)
+        msg_box.setStandardButtons(
+            QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No
+        )
+        msg_box.setDefaultButton(QtWidgets.QMessageBox.StandardButton.Yes)
+
+        # Restore verify dialog position
+        verify_geometry = self.settings.value("verify_geometry")
+        if verify_geometry:
+            msg_box.restoreGeometry(verify_geometry)
+
+        response = msg_box.exec()
+
+        # Save verify dialog position
+        self.settings.setValue("verify_geometry", msg_box.saveGeometry())
+
         return response == QtWidgets.QMessageBox.StandardButton.Yes
 
     def click_cancel(self) -> None:
@@ -503,6 +523,21 @@ class ParamForm(QtWidgets.QDialog):
         else:
             self.ok = True
             self.close()
+
+    def _restore_geometry(self) -> None:
+        """Restore window position from settings."""
+        geometry = self.settings.value("main_geometry")
+        if geometry:
+            self.restoreGeometry(geometry)
+
+    def _save_geometry(self) -> None:
+        """Save window position to settings."""
+        self.settings.setValue("main_geometry", self.saveGeometry())
+
+    def closeEvent(self, event: Any) -> None:
+        """Save geometry when closing."""
+        self._save_geometry()
+        super().closeEvent(event)
 
 
 if __name__ == "__main__":
