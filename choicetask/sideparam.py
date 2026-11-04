@@ -123,7 +123,7 @@ class StringItem(DataType):
         (Note: modifying the label text for errors mixes validation state with UI presentation;
          consider using a separate error display for a cleaner separation.)
         """
-        error_bg: str = "#f6989d"
+        error_bg: str = "#cc4444"  # Medium red - works in light and dark modes
         widget: QtWidgets.QLineEdit = self.widgets["widget"]  # type: ignore
         label: QtWidgets.QLabel = self.widgets["label"]  # type: ignore
         entry: str = text
@@ -458,9 +458,9 @@ class ParamForm(QtWidgets.QDialog):
             elif isinstance(param, BoolItem):
                 tag: str | None = param.tag
                 tag_str: str = f"[{tag}]" if tag else ""
-                question += f'<font color="#0000FF">{label}{tag_str}</font>: {value}<br>'
+                question += f"<b>{label}{tag_str}</b>: {value}<br>"
             else:
-                question += f'<font color="#0000FF">{label}</font>: {value}<br>'
+                question += f"<b>{label}</b>: {value}<br>"
         buttons = QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No
         default_button = QtWidgets.QMessageBox.StandardButton.Yes
         msg_box = QtWidgets.QMessageBox()
