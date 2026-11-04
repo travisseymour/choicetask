@@ -111,8 +111,8 @@ def default_config():
     config = configparser.ConfigParser()
     # config.add_section('DEFAULT')
     config.set("DEFAULT", "pid", getpass.getuser().replace(" ", "_"))
-    config.set("DEFAULT", "blocks", "4")
-    config.set("DEFAULT", "blocktrials", "30")
+    config.set("DEFAULT", "blocks", "1")
+    config.set("DEFAULT", "blocktrials", "8")
     config.set("DEFAULT", "condition", "Hard")
     config.set("DEFAULT", "type", "Practice")
     config.set("DEFAULT", "diameter", str(int(stim_ratio * w)))
@@ -124,8 +124,8 @@ def default_config():
 
     config.add_section("USER")
     config.set("USER", "pid", getpass.getuser().replace(" ", "_"))
-    config.set("USER", "blocks", "4")
-    config.set("USER", "blocktrials", "30")
+    config.set("USER", "blocks", "1")
+    config.set("USER", "blocktrials", "8")
     config.set("USER", "condition", "Hard")
     config.set("USER", "type", "Practice")
     config.set("USER", "diameter", str(int(stim_ratio * w)))
@@ -260,9 +260,25 @@ def main():
         overwrite = BoolItem("", tag="Overwrite Data If Exists?", default=config.getboolean("USER", "overwrite"))
         tag = StringItem("Data Tag", default=config.get("USER", "tag"), maxlength=40)
 
+        # Reset callback to set blocks/trials based on session type
+        def reset_defaults() -> None:
+            session_widget = session_type.widgets.get("widget")
+            blocks_widget = blocks.widgets.get("widget")
+            trials_widget = trials.widgets.get("widget")
+            if session_widget and blocks_widget and trials_widget:
+                current_type = session_widget.currentText()  # type: ignore[union-attr]
+                if current_type == "Practice":
+                    blocks_widget.setValue(1)  # type: ignore[union-attr]
+                    trials_widget.setValue(8)  # type: ignore[union-attr]
+                else:  # Test
+                    blocks_widget.setValue(3)  # type: ignore[union-attr]
+                    trials_widget.setValue(24)  # type: ignore[union-attr]
+
         # Create parameter GUI
         param = ParamForm(
-            "Settings", [note, pard_id, blocks, trials, cond, session_type, diameter, resol, fullscreen, overwrite, tag]
+            "Settings",
+            [note, pard_id, blocks, trials, cond, session_type, diameter, resol, fullscreen, overwrite, tag],
+            reset_callback=reset_defaults,
         )
 
         old_vals = param.get_values()

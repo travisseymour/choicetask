@@ -395,10 +395,16 @@ def run_app(main_window: QtWidgets.QWidget, title: str, app: QApplication) -> No
 
 
 class ParamForm(QtWidgets.QDialog):
-    def __init__(self, title: str, param_list: list[DataType]) -> None:
+    def __init__(
+        self,
+        title: str,
+        param_list: list[DataType],
+        reset_callback: Any | None = None,
+    ) -> None:
         super().__init__()
         self.title: str = title
         self.param_list: list[DataType] = param_list
+        self.reset_callback: Any | None = reset_callback
         self.row: int = 0
         # Rename "ok" to "accepted" for clarity.
         self.ok: bool = True
@@ -406,6 +412,11 @@ class ParamForm(QtWidgets.QDialog):
         self.cancel_button: QtWidgets.QPushButton = QtWidgets.QPushButton("Cancel", self)
         self.ok_button.clicked.connect(self.click_ok)
         self.cancel_button.clicked.connect(self.click_cancel)
+        self.reset_button: QtWidgets.QPushButton | None = None
+        if self.reset_callback:
+            reset_btn = QtWidgets.QPushButton("Reset", self)
+            reset_btn.clicked.connect(self.click_reset)
+            self.reset_button = reset_btn
 
         # Create layout.
         self.layout: QtWidgets.QGridLayout = QtWidgets.QGridLayout()
@@ -430,14 +441,20 @@ class ParamForm(QtWidgets.QDialog):
                 self.row += 1
 
     def add_buttons(self) -> None:
-        """Manually add cancel and OK buttons as the last row of widgets."""
+        """Manually add cancel, reset (if available), and OK buttons as the last row of widgets."""
         button_layout_widget: QtWidgets.QWidget = QtWidgets.QWidget()
         button_layout_widget.setWindowFlags(QtCore.Qt.WindowType.Widget)
         layout: QtWidgets.QHBoxLayout = QtWidgets.QHBoxLayout()
         layout.addWidget(self.cancel_button, alignment=QtCore.Qt.AlignmentFlag.AlignLeft)
+        if self.reset_button:
+            layout.addWidget(self.reset_button, alignment=QtCore.Qt.AlignmentFlag.AlignLeft)
         layout.addWidget(self.ok_button, alignment=QtCore.Qt.AlignmentFlag.AlignLeft)
         button_layout_widget.setLayout(layout)
         self.layout.addWidget(button_layout_widget, self.row, 1)
+
+    def click_reset(self) -> None:
+        if self.reset_callback:
+            self.reset_callback()
 
     def get_values(self) -> list[Any]:
         values: list[Any] = []
