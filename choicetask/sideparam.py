@@ -41,15 +41,11 @@ class DataType:
         self.tooltip: str | None = tooltip
         self.widgets: dict[str, QtWidgets.QWidget | None] = {}
 
-    def _fix_params(self) -> None:
-        if not isinstance(self.tooltip, str):
-            self.tooltip = str(self.default)
-
     def fix_params(self) -> None:
         pass
 
-    def make_widget(self) -> QtWidgets.QWidget | None:
-        return None
+    def make_widgets(self) -> None:
+        pass
 
     def value(self) -> Any:
         return None
@@ -127,8 +123,7 @@ class StringItem(DataType):
         (Note: modifying the label text for errors mixes validation state with UI presentation;
          consider using a separate error display for a cleaner separation.)
         """
-        white: str = "#ffffff"
-        red: str = "#f6989d"
+        error_bg: str = "#f6989d"
         widget: QtWidgets.QLineEdit = self.widgets["widget"]  # type: ignore
         label: QtWidgets.QLabel = self.widgets["label"]  # type: ignore
         entry: str = text
@@ -140,17 +135,20 @@ class StringItem(DataType):
         if self.bad_list_msg in label_text:
             label_text = label_text.replace(self.bad_list_msg, "")
         # Validate entry.
+        has_error = False
         if self.good_list and entry in self.good_list:
-            color: str = white
+            has_error = False
         elif self.not_empty and entry.strip() == "":
-            color = red
+            has_error = True
             label_text += self.empty_msg
         elif self.bad_list and entry in self.bad_list:
-            color = red
+            has_error = True
             label_text += self.bad_list_msg
+
+        if has_error:
+            widget.setStyleSheet(f"QLineEdit {{ background-color: {error_bg} }}")
         else:
-            color = white
-        widget.setStyleSheet(f"QLineEdit {{ background-color: {color} }}")
+            widget.setStyleSheet("")  # Use system theme colors
         if label_text != label.text():
             label.setText(label_text)
 
@@ -280,7 +278,7 @@ class ChoiceItem(DataType):
     def fix_params(self) -> bool:
         if not isinstance(self.choices, (list, tuple)):
             return False
-        if isinstance(self.default, int) and (0 < self.default < (len(self.choices) - 1)):
+        if isinstance(self.default, int) and 0 <= self.default < len(self.choices):
             self.index = self.default
         elif isinstance(self.default, str) and (self.default in self.choices):  # type: ignore
             self.index = self.choices.index(self.default)  # type: ignore
@@ -423,14 +421,9 @@ class ParamForm(QtWidgets.QDialog):
             label: QtWidgets.QWidget | None = param.widgets.get("label")
             widget: QtWidgets.QWidget | None = param.widgets.get("widget")
             if label is not None and widget is not None:
-                # For compound widgets (e.g., FileItem), span across columns.
-                if isinstance(widget, QtWidgets.QWidget):
-                    self.layout.addWidget(label, self.row, 0, 1, 2)
-                    self.row += 1
-                    self.layout.addWidget(widget, self.row, 0, 1, 2)
-                else:
-                    self.layout.addWidget(label, self.row, 0)
-                    self.layout.addWidget(widget, self.row, 1)
+                self.layout.addWidget(label, self.row, 0, 1, 2)
+                self.row += 1
+                self.layout.addWidget(widget, self.row, 0, 1, 2)
                 self.row += 1
             elif widget is not None:
                 self.layout.addWidget(widget, self.row, 0, 1, 2)
