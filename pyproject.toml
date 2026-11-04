@@ -16,7 +16,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ChoiceTask"
-version = "2026.11.3.4"
+version = "2026.11.3.5"
 description = "ChoiceTask: Simple 4-Color Choice Task For MHP Class."
 authors = [{ name = "Travis L. Seymour, PhD", email = "nogard@ucsc.edu" }]
 license = { file = "LICENSE" }
