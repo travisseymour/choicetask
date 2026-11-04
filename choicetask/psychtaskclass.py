@@ -24,6 +24,63 @@ from choicetask.colordict import rgbcolor
 from choicetask.mboxes import mbox_warning
 
 
+def shuffle_with_max_consecutive(
+    items: list, key_func: callable, max_consecutive: int = 2, max_attempts: int = 1000
+) -> list:
+    """
+    Shuffle a list while preventing more than max_consecutive items with the same key in a row.
+
+    Args:
+        items: List of items to shuffle
+        key_func: Function to extract the grouping key from each item (e.g., lambda x: x[0] for color)
+        max_consecutive: Maximum allowed consecutive items with the same key
+        max_attempts: Maximum shuffle attempts before falling back to simple shuffle
+
+    Returns:
+        Shuffled list meeting the constraint, or best-effort shuffle if constraint can't be met
+    """
+    rng = random.Random()
+
+    for _ in range(max_attempts):
+        shuffled = items.copy()
+        rng.shuffle(shuffled)
+
+        # Check if this shuffle meets the constraint
+        valid = True
+        for i in range(len(shuffled) - max_consecutive):
+            keys = [key_func(shuffled[j]) for j in range(i, i + max_consecutive + 1)]
+            if len(set(keys)) == 1:  # All same key
+                valid = False
+                break
+
+        if valid:
+            return shuffled
+
+    # Fallback: construct a valid sequence if possible
+    shuffled = items.copy()
+    rng.shuffle(shuffled)
+
+    # Try to fix violations by swapping
+    for _ in range(max_attempts):
+        fixed = True
+        for i in range(len(shuffled) - max_consecutive):
+            keys = [key_func(shuffled[j]) for j in range(i, i + max_consecutive + 1)]
+            if len(set(keys)) == 1:
+                # Find a position to swap with
+                for swap_idx in range(i + max_consecutive + 1, len(shuffled)):
+                    if key_func(shuffled[swap_idx]) != keys[0]:
+                        shuffled[i + max_consecutive], shuffled[swap_idx] = (
+                            shuffled[swap_idx],
+                            shuffled[i + max_consecutive],
+                        )
+                        fixed = False
+                        break
+        if fixed:
+            break
+
+    return shuffled
+
+
 class PsychTask:
     """Implements Base Structure of a Simple Console-Based Experiment"""
 
@@ -107,9 +164,10 @@ class PsychTask:
         # if ready to quit, skip this block
         if self.quit_now:
             return
-        # Randomizes trial list
-        rng = random.Random()
-        rng.shuffle(self.trial_list)
+        # Randomizes trial list (max 2 consecutive same-color trials)
+        self.trial_list = shuffle_with_max_consecutive(
+            self.trial_list, key_func=lambda x: x[0], max_consecutive=2
+        )
         # Advances the block counter
         self.current_block += 1
         # Pre-block mask
